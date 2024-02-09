@@ -22,9 +22,8 @@ const UserSchema = new mongoose.Schema({
     maxLength: 50,
   },
   number: {
-    type: Number,
+    type: String,
     required: [true, 'Please provide number'],
-    minLength: 12,
     maxLength: 12,
   },
   gender: {
