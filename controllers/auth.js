@@ -66,11 +66,29 @@ const usersUpdate = async (req, res) => {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err.message });
   }
 };
+const usersDelete = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    
+    // Assuming you have a User model with a deleteOne method
+    const deletedUser = await User.deleteOne({ _id: userId });
+
+    if (deletedUser.deletedCount === 0) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: 'User not found' });
+    }
+
+    res.status(StatusCodes.OK).json({ message: 'User deleted successfully' });
+  } catch (err) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err.message });
+  }
+}
+
 
 module.exports = {
   register,
   login,
   users,
   usersId,
-  usersUpdate
+  usersUpdate,
+  usersDelete
 }
