@@ -39,8 +39,21 @@ const users = async (req, res) => {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(err);
   }
 }
+const usersId = async (req, res) => {
+  try {
+    const userId = req.params.id; // Accessing the route parameter (ObjectId)
+    const user = await User.findById(userId); // Fetching user detail by ObjectId
+    if (!user) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: 'User not found' });
+    }
+    res.status(StatusCodes.OK).json(user);
+  } catch (err) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err.message });
+  }
+}
 module.exports = {
   register,
   login,
-  users
+  users,
+  usersId
 }
