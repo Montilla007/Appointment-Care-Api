@@ -28,7 +28,7 @@ const login = async (req, res) => {
   }
 
   const token = user.createJWT()
-  res.status(StatusCodes.OK).json(user)
+  res.status(StatusCodes.OK).json({user: user, token})// must change to { user: { name: user.Fname }, token }
 }
 
 const users = async (req, res) => {
