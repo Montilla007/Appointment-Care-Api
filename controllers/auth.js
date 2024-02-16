@@ -51,9 +51,26 @@ const usersId = async (req, res) => {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err.message });
   }
 }
+const usersUpdate = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findByIdAndUpdate(userId, req.body, { new: true });
+    if (!user) {
+      // If user is not found, return a 404 error
+      return res.status(StatusCodes.NOT_FOUND).json({ message: 'User not found' });
+    }
+    // If user is updated successfully, send the updated user as a response
+    res.status(StatusCodes.OK).json({ user });
+  } catch (err) {
+    // Handle errors
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err.message });
+  }
+};
+
 module.exports = {
   register,
   login,
   users,
-  usersId
+  usersId,
+  usersUpdate
 }
