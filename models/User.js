@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken')
 
 const UserSchema = new mongoose.Schema({
   
-  task: {
+  role: {
     type: String,
     required: [true, 'Please provide task'],
     enum: ['Doctor', 'Patient'],
@@ -55,16 +55,11 @@ const UserSchema = new mongoose.Schema({
     type: Buffer, // Store binary image data
     allowNull: true
   },
-})
-
-function removeTime(date) {
-  // Ensure that the date is a valid Date object
-  if (date instanceof Date) {
-    // Set the time part to midnight
-    date.setUTCHours(0, 0, 0, 0);
+  consultation: {
+    type: String,
+    required: [false, 'Please provide consultaion']
   }
-  return date;
-}
+})
 
 UserSchema.pre('save', async function () {
   const salt = await bcrypt.genSalt(10)
