@@ -25,6 +25,10 @@ app.use(cors());
 app.use('/api/v1/Auth', authRouter)
 app.use('/api/v1/home', authenticateUser, homeRouter)
 
+app.get("/api/v1/test", async (req, res) => {
+  res.json({ message: 'User deleted successfully' });
+});
+
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
