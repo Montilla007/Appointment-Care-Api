@@ -51,6 +51,10 @@ const UserSchema = new mongoose.Schema({
     required: [true, 'Please provide password'],
     minlength: 6,
   },
+  imageData: {
+    type: Buffer, // Store binary image data
+    allowNull: true
+  },
 })
 
 function removeTime(date) {
