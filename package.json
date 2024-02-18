@@ -8,7 +8,7 @@
     "dev": "nodemon app.js"
   },
   "engines": {
-    "node": "20.x",
+    "node": "18.x",
     "npm": "6.x"
   },
   "keywords": [],
