@@ -4,8 +4,12 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app.js",
-    "build": "netlify deploy --prod"
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "engines": {
+    "node": "14.x",
+    "npm": "6.x"
   },
   "keywords": [],
   "author": "",
@@ -21,10 +25,6 @@
     "express-async-errors": "^3.1.1",
     "http-status-codes": "^2.3.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.1.1",
-    "netlify": "^13.1.14",
-    "netlify-cli": "^17.16.2",
-    "netlify-lambda": "^2.0.16",
-    "serverless-http": "^3.2.0"
+    "mongoose": "^8.1.1"
   }
 }
