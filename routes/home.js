@@ -4,13 +4,13 @@ const router = express.Router()
 const {
   createHome,
   deleteHome,
-  getAllHome,
   updateHome,
   getHome,
 } = require('../controllers/home')
 
-router.route('/').post(createHome).get(getAllHome)
-
-router.route('/:id').get(getHome).delete(deleteHome).patch(updateHome)
+router.get('/', getHome)
+router.post('/', createHome)
+router.put('/', updateHome)
+router.delete('/', deleteHome)
 
 module.exports = router

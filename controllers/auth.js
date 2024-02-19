@@ -7,7 +7,7 @@ const register = async (req, res) => {
   try {
     const user = await User.create({ ...req.body })
     const token = user.createJWT()
-    res.status(StatusCodes.CREATED).json({ user: { name: user.Fname }, token })
+    res.status(StatusCodes.CREATED).json({ user: { name: user.Fname }, role: { role: user.role}, token })
   } catch (err) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(err);
   }
