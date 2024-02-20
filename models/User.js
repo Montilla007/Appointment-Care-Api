@@ -56,6 +56,26 @@ const userSchema = new mongoose.Schema({
   },
   // Common fields for both doctors and patients
   // Add other common fields here
+  location: {
+    hn: {
+      type: Number,
+      required: true
+    },
+    barangay: {
+      type: String,
+      required: true
+    },
+    municipality: {
+      type: String,
+      required: true
+    },
+    province: {
+      type: String,
+      required: function () {
+        return this.role === 'Doctor';
+      }
+    },
+  },
   status: {
       type: String,
       required: function () {
@@ -100,7 +120,7 @@ const userSchema = new mongoose.Schema({
       type: String,
       required: function () {
         return this.role === 'Patient';
-      },  
+      },
   }
 });
 
