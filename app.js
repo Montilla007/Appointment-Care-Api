@@ -12,6 +12,7 @@ const authenticateUser = require('./middleware/authentication');
 // routers
 const authRouter = require('./routes/auth')
 const homeRouter = require('./routes/home')
+const personRouter = require('./routes/person')
 
 // error handler
 const notFoundMiddleware = require('./middleware/not-found');
@@ -23,7 +24,9 @@ app.use(cors());
 
 // routes
 app.use('/api/v1/Auth', authRouter)
+app.use('/api/v1/Person', personRouter)
 app.use('/api/v1/home', authenticateUser, homeRouter)
+// app.use('/api/v1/admin', authenticateAdmin, adminRouter)
 
 app.get("/api/v1/test", async (req, res) => {
   res.json({ message: 'User deleted successfully' });

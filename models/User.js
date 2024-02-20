@@ -52,7 +52,7 @@ const userSchema = new mongoose.Schema({
   },
   imageData: {
       type: Buffer, // Store binary image data
-      allowNull: true
+      required: [false, 'Please provide imageData']
   },
   // Common fields for both doctors and patients
   // Add other common fields here
@@ -119,6 +119,9 @@ userSchema.methods.comparePassword = async function (entryPassword) {
   return isMatch
 }
 
-
+userSchema.methods.updateImageData = async function (imageData) {
+  this.imageData = imageData;
+  await this.save();
+};
 
 module.exports = mongoose.model('User', userSchema)
