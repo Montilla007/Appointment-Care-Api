@@ -4,6 +4,10 @@ const jwt = require('jsonwebtoken')
 
 const adminSchema = new mongoose.Schema({
 
+    role: {
+        type: String,
+        default: 'Admin'
+    },
     username: {
         type: String,
         required: [true, 'Please provide username']
