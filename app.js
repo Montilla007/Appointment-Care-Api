@@ -20,7 +20,6 @@ const appointRouter = require('./routes/appointment')
 const adminRouter = require('./routes/admin')
 const panelRouter = require('./routes/panel')
 
-const intro = require('./routes/intro')
 
 // error handler
 const notFoundMiddleware = require('./middleware/not-found');
@@ -39,8 +38,6 @@ app.use('/api/v1/appoint', appointRouter)
 
 app.use('/api/v1/admin', adminRouter)
 app.use('/api/v1/admin-panel', authenticateAdmin, panelRouter)
-
-app.use('/api/v1/intro', intro)
 
 
 app.use(notFoundMiddleware);
