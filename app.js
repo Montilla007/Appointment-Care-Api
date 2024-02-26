@@ -18,8 +18,6 @@ const personRouter = require('./routes/person')
 const adminRouter = require('./routes/admin')
 const panelRouter = require('./routes/panel')
 
-const intro = require('./routes/intro')
-
 // error handler
 const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
@@ -36,7 +34,9 @@ app.use('/api/v1/home', authenticateUser, homeRouter)
 app.use('/api/v1/admin', adminRouter)
 app.use('/api/v1/admin-panel', authenticateAdmin, panelRouter)
 
-app.use('/api/v1', intro)
+app.use('/', (res) => {
+  res.send('Welcome to the homepage!');
+});
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
