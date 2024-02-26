@@ -15,6 +15,8 @@ const authRouter = require('./routes/auth')
 const homeRouter = require('./routes/home')
 const personRouter = require('./routes/person')
 
+const appointRouter = require('./routes/appointment')
+
 const adminRouter = require('./routes/admin')
 const panelRouter = require('./routes/panel')
 
@@ -33,6 +35,8 @@ app.use('/api/v1/home', authenticateUser, homeRouter)
 
 app.use('/api/v1/admin', adminRouter)
 app.use('/api/v1/admin-panel', authenticateAdmin, panelRouter)
+
+app.use('/api/v1/appoint', appointRouter)
 
 app.use('/', (req, res) => {
   res.send("Behold, the backend API, the silent force powering our digital realm. Like a ninja in the shadows, it orchestrates data with precision, ensuring seamless interactions while the flashy frontends hog the spotlight. It's the unsung hero, the digital wizard behind the curtain, quietly making miracles happen in the world of ones and zeroes.");
