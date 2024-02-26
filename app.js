@@ -40,7 +40,7 @@ app.use('/api/v1/appoint', appointRouter)
 app.use('/api/v1/admin', adminRouter)
 app.use('/api/v1/admin-panel', authenticateAdmin, panelRouter)
 
-app.use('/api/v1', intro)
+app.use('/api/v1/intro', intro)
 
 
 app.use(notFoundMiddleware);
