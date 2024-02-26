@@ -20,6 +20,8 @@ const appointRouter = require('./routes/appointment')
 const adminRouter = require('./routes/admin')
 const panelRouter = require('./routes/panel')
 
+const intro = require('./routes/intro')
+
 // error handler
 const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
@@ -38,9 +40,7 @@ app.use('/api/v1/appoint', appointRouter)
 app.use('/api/v1/admin', adminRouter)
 app.use('/api/v1/admin-panel', authenticateAdmin, panelRouter)
 
-app.use('/', (req, res) => {
-  res.send("Behold, the backend API, the silent force powering our digital realm. Like a ninja in the shadows, it orchestrates data with precision, ensuring seamless interactions while the flashy frontends hog the spotlight. It's the unsung hero, the digital wizard behind the curtain, quietly making miracles happen in the world of ones and zeroes.");
-});
+app.use('/api/v1', intro)
 
 
 app.use(notFoundMiddleware);
