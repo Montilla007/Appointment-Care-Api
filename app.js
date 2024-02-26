@@ -15,8 +15,6 @@ const authRouter = require('./routes/auth')
 const homeRouter = require('./routes/home')
 const personRouter = require('./routes/person')
 
-const appointRouter = require('./routes/appointment')
-
 const adminRouter = require('./routes/admin')
 const panelRouter = require('./routes/panel')
 
