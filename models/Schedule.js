@@ -11,12 +11,24 @@ const scheduleSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
-    date: {
-        type: Date,
+    online: {
+        type: Boolean,
         required: true
     },
+    time: {
+        type: String,
+        required: true
+    },
+    date: {
+        type: String,
+        required: true
+    },
+    localTime: {
+        type: String,
+        default: null
+    },
     localDate: {
-        type: Date,
+        type: String,
         default: null
     },
     status: {

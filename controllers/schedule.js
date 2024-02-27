@@ -23,11 +23,11 @@ const getSchedule = async (req, res, next) => {
 const requestSchedule = async (req, res) => {
     // Extract patient and doctor IDs from request body
     const { id } = req.params;
-    const { doctorId, date } = req.body;
+    const { doctorId, date, time, online, f2f } = req.body;
 
     try {
         // Create a new schedule entry
-        const schedule = await Schedule.create({ patientId: id, doctorId, date });
+        const schedule = await Schedule.create({ patientId: id, doctorId, date, time, online, f2f });
 
         res.status(StatusCodes.CREATED).json({ schedule });
     } catch (error) {
@@ -38,26 +38,32 @@ const requestSchedule = async (req, res) => {
 const verifySchedule = async (req, res) => {
     try {
         const { id } = req.params;
-        const { patientId, status, date } = req.body; 
+        const { patientId, status, date, time, online} = req.body; 
 
         const backUp = await Schedule.findOne({ doctorId: id, patientId });
 
         const localDate = backUp.localDate;
+        const localTime = backUp.localTime;
 
         let update = { $set: { status } }; // Default update object with the provided status
 
         if (status === 'Accepted') {
             update.$set.localDate = date; // If status is 'Accepted', set localDate to the provided date
             update.$set.date = date;
+            update.$set.localTime = time;
+            update.$set.time = time;
         }
         else if (status === 'Rejected') { 
             console.log('date:', date); // Log the value of date
             console.log('localDate:', localDate); // Log the value of localDate
-            if (localDate !== null) {
+            if (localDate !== null || localTime !== null) {
                 console.log("2")
                 update.$set.date = localDate; // If status is 'Rejected', set localDate to the provided date 
+                update.$set.time = localTime;
+                update.$set.online = !online; 
             } else {
                 update.$set.localDate = null; // If status is 'Rejected', set localDate to null
+                update.$set.localTime = null;
             }
         }
 
@@ -80,8 +86,8 @@ const verifySchedule = async (req, res) => {
 const editSchedule = async (req, res) => {
     try {
         const { id } = req.params; 
-        const { date, status } = req.body; // New date for rescheduling
-
+        const { date, time, status, online } = req.body; // New date for rescheduling
+        
         // Find the schedule by ID
         const schedule = await Schedule.findOne({ patientId: id });
 
@@ -95,7 +101,9 @@ const editSchedule = async (req, res) => {
         }
 
         // Update the schedule with the new date
+        schedule.online = online;
         schedule.date = date;
+        schedule.time = time;
         schedule.status = status;
         await schedule.save();
 
