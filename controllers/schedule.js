@@ -57,6 +57,7 @@ const verifySchedule = async (req, res) => {
                 update.$set.date = schedule.localDate;
                 update.$set.time = schedule.localTime;
                 update.$set.online = !schedule.online;
+                update.$set.status = 'Accepted'
             } else {
                 update.$set.localDate = null;
                 update.$set.localTime = null;
