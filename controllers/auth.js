@@ -5,17 +5,17 @@ const upload = require('../middleware/fileUpload'); // Import multer middleware
 const register = async (req, res) => {
   try {
     // Add multer middleware here for handling image upload
-    upload.single('image')(req, res, async (err) => {
-      // Handle image upload errors
-      if (err) {
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Image upload failed', error: err.message });
-      }
+    // upload.single('image')(req, res, async (err) => {
+    //   // Handle image upload errors
+    //   if (err) {
+    //     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Image upload failed', error: err.message });
+    //   }
 
       // Get user data from the request body
       const userData = req.body;
 
       // Add the path of the uploaded image to the user data
-      userData.imageData = req.file ? req.file.path : null;
+      // userData.imageData = req.file ? req.file.path : null;
 
       // Create the user
       const user = await User.create(userData);
