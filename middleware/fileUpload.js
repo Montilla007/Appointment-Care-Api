@@ -18,4 +18,4 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 } // Limit file size to 10MB
 }).single('image');
 
-module.exports = upload;
+module.exports = upload;  // Export the upload middleware

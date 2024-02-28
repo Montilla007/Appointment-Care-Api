@@ -1,21 +1,35 @@
-const User = require('../models/User')
-const { StatusCodes } = require('http-status-codes')
-const { BadRequestError, UnauthenticatedError } = require('../errors')
-
-
+const User = require('../models/User');
+const { StatusCodes } = require('http-status-codes');
+const { BadRequestError, UnauthenticatedError } = require('../errors');
+const upload = require('../middleware/fileUpload'); // Import multer middleware
 const register = async (req, res) => {
   try {
-    const userData = { ...req.body };
-    userData.imageData = req.file ? req.file.path : null; // Add the path of the uploaded image to the user data
+    // Add multer middleware here for handling image upload
+    upload.single('image')(req, res, async (err) => {
+      // Handle image upload errors
+      if (err) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Image upload failed', error: err.message });
+      }
 
-    const user = await User.create(userData);
-    const token = user.createJWT();
+      // Get user data from the request body
+      const userData = req.body;
 
-    res.status(StatusCodes.CREATED).json({ user: { name: user.Fname }, role: { role: user.role}, token });
+      // Add the path of the uploaded image to the user data
+      userData.imageData = req.file ? req.file.path : null;
+
+      // Create the user
+      const user = await User.create(userData);
+
+      // Generate JWT token
+      const token = user.createJWT();
+
+      // Send response
+      res.status(StatusCodes.CREATED).json({ user: { name: user.Fname }, role: { role: user.role}, token });
+    });
   } catch (err) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(err);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Registration failed', error: err.message });
   }
-}
+};
 
 const login = async (req, res) => {
   const { email, password } = req.body
