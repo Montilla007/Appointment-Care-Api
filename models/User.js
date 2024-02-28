@@ -120,13 +120,6 @@ const userSchema = new mongoose.Schema({
     required: function () {
       return this.role === 'Doctor';
     },
-  },
-  // Define a schema for patients
-  consultation: {
-    type: String,
-    required: function () {
-      return this.role === 'Patient';
-    },
   }
 });
 
