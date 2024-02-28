@@ -39,7 +39,7 @@ app.use('/api/v1/admin-panel', authenticateAdmin, panelRouter)
 app.use('/api/v1/appoint', appointRouter)
 
 app.use('/', (req, res) => {
-  res.send("Behold, the backend API, the silent force powering our digital realm. Like a ninja in the shadows, it orchestrates data with precision, ensuring seamless interactions while the flashy frontends hog the spotlight. It's the unsung hero, the digital wizard behind the curtain, quietly making miracles happen in the world of ones and zeroes.");
+  res.send("Hello my name is Christer Dale Reyes, the backend developer in Code of Duty aka the person who make miracles behind the curtain.");
 });
 
 app.use(notFoundMiddleware);

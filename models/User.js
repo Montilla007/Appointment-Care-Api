@@ -51,7 +51,7 @@ const userSchema = new mongoose.Schema({
     minlength: 6,
   },
   imageData: {
-    type: Buffer, // Store binary image data
+    type: String, // Store binary image data
     required: [false, 'Please provide imageData']
   },
   // Common fields for both doctors and patients

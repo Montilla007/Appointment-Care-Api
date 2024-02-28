@@ -5,13 +5,18 @@ const { BadRequestError, UnauthenticatedError } = require('../errors')
 
 const register = async (req, res) => {
   try {
-    const user = await User.create({ ...req.body })
-    const token = user.createJWT()
-    res.status(StatusCodes.CREATED).json({ user: { name: user.Fname }, role: { role: user.role}, token })
+    const userData = { ...req.body };
+    userData.imageData = req.file ? req.file.path : null; // Add the path of the uploaded image to the user data
+
+    const user = await User.create(userData);
+    const token = user.createJWT();
+
+    res.status(StatusCodes.CREATED).json({ user: { name: user.Fname }, role: { role: user.role}, token });
   } catch (err) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(err);
   }
 }
+
 const login = async (req, res) => {
   const { email, password } = req.body
 
