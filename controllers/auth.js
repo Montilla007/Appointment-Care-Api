@@ -6,29 +6,16 @@ const multer = require('multer')
 
 const register = async (req, res) => {
   try {
-    // Add multer middleware here for handling image upload
-    upload.single('imageData')(req, res, async (err) => {
-      // Handle image upload errors
-      if (err) {
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Image upload failed', error: err.message });
-      }
+    // Create the user
+    const user = await User.create(req.body);
 
-      // Get user data from the request body
-      const userData = req.body;
+    // Generate JWT token
+    const token = user.createJWT();
 
-      // Add the path of the uploaded image to the user data
-      userData.imageData = req.file ? req.file.path : null;
-
-      // Create the user
-      const user = await User.create(userData);
-
-      // Generate JWT token
-      const token = user.createJWT();
-
-      // Send response
-      res.status(StatusCodes.CREATED).json({ user: { name: user.Fname }, role: { role: user.role}, token });
-    });
+    // Send response
+    res.status(StatusCodes.CREATED).json({ user: { name: user.Fname }, role: { role: user.role}, token });
   } catch (err) {
+    // Handle database or server errors
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Registration failed', error: err.message });
   }
 };
