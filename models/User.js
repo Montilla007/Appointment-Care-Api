@@ -121,20 +121,20 @@ const userSchema = new mongoose.Schema({
       return this.role === 'Doctor';
     },
   },
-  consultation: {
-    type: String,
-    required: function () {
-      return this.role === 'Patient';
-    },
-    default: null
-  },
-  observation: {
-    type: String,
-    required: function () {
-      return this.role === 'Patient';
-    },
-    default: null
-  }
+  // consultation: {
+  //   type: String,
+  //   required: function () {
+  //     return this.role === 'Patient';
+  //   },
+  //   default: null
+  // },
+  // observation: {
+  //   type: String,
+  //   required: function () {
+  //     return this.role === 'Patient';
+  //   },
+  //   default: null
+  // }
 });
 
 userSchema.pre('save', async function () {
