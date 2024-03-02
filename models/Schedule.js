@@ -28,7 +28,7 @@ const scheduleSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please provide number'],
         maxLength: 12,
-      },
+    },
     online: {
         type: Boolean,
         required: true
@@ -53,7 +53,22 @@ const scheduleSchema = new mongoose.Schema({
         type: String,
         enum: ['Pending', 'Accepted', 'Rejected', 'Request', 'Dismiss'],
         default: 'Pending'
-    }
+    },
+    symptoms: {
+        type: [String],
+        required: [false, 'Symptoms  is required for patients'],
+        default: null,
+    },
+    observation: {
+        type: String,
+        required: [false, 'Observation is required for patients'],
+        default: null,
+    },
+    prescription: {
+        type: String,
+        required: [false, 'Consultation is required for patients'],
+        default: null,
+    },
     // Other schedule details
 });
 

@@ -112,6 +112,32 @@ const editSchedule = async (req, res) => {
     }
 };
 
+const makeConsult = async (req, res) => {
+    const { id } = req.params; // Access the 'id' parameter from the request params
+    const { patientId, symptoms, observation, prescription } = req.body;
+
+    try {
+        // Ensure observation is always an array
+        const symptom = Array.isArray(symptoms) ? symptoms : [symptoms];
+
+        // Update the schedule with observation and prescription
+        const updatedSchedule = await Schedule.findOneAndUpdate(
+            { doctorId: id, patientId },
+            { symptoms: symptom, observation: observation, prescription: prescription },
+            { new: true } // Return the updated document
+        );
+
+        if (!updatedSchedule) {
+            throw new NotFoundError('No schedule found');
+        }
+
+        // Respond with success
+        res.status(StatusCodes.OK).json({ message: 'Symptoms, Consultation and Observation recorded successfully', schedule: updatedSchedule });
+    } catch (error) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    };
+};
+
 // Implement other controller methods for accepting/rejecting and rescheduling appointments
 
-module.exports = { getSchedule, requestSchedule, verifySchedule, editSchedule };
+module.exports = { getSchedule, requestSchedule, verifySchedule, editSchedule, makeConsult };
