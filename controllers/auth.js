@@ -5,32 +5,32 @@ const uploadImage = require('../middleware/fileUpload'); // Import multer middle
 
 const register = async (req, res) => {
   try {
-    // Upload the image using the middleware
-    uploadImage(req, res, async function(err) {
-      if (err) {
-        return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Image upload failed', error: err.message });
-      }
-      
-      // Remove imageURL from req.body
-      const { imageURL, ...userData } = req.body;
+    // Check if an image was uploaded
+    const hasImage = req.file && req.file.originalname;
 
-      // Add imageURL to user data if it exists
-      const userDataWithImage = imageURL ? { ...userData, imageURL } : userData;
-      
-      // Create the user
-      const user = await User.create(userDataWithImage);
+    // If there's no image uploaded, set imageURL to null
+    const imageURL = hasImage ? await uploadImageToStorage(req.file) : null;
 
-      // Generate JWT token
-      const token = user.createJWT();
+    // Remove imageURL from req.body
+    const { ...userData } = req.body;
 
-      // Send response
-      res.status(StatusCodes.CREATED).json({ user: { name: user.Fname }, role: { role: user.role}, token });
-    });
+    // Add imageURL to user data if it exists
+    const userDataWithImage = hasImage ? { ...userData, imageURL } : userData;
+
+    // Create the user
+    const user = await User.create(userDataWithImage);
+
+    // Generate JWT token
+    const token = user.createJWT();
+
+    // Send response
+    res.status(StatusCodes.CREATED).json({ user: { name: user.Fname }, role: { role: user.role}, token });
   } catch (err) {
     // Handle database or server errors
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Registration failed', error: err.message });
   }
 };
+
 
 
 
