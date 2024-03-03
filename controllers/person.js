@@ -53,8 +53,41 @@ const users = async (req, res) => {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err.message });
     }
   }
+  const changePassword = async (req, res) => {
+    const userId = req.params.id; // Extract user ID from request parameters
+    const { currentPassword, newPassword } = req.body; // Extract current and new passwords from request body
+
+    try {
+        // Check if current password matches the password stored in the database
+        const user = await User.findById(userId);
+        if (!user) {
+            throw new BadRequestError('User not found');
+        }
+
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+            throw new BadRequestError('Invalid current password');
+        }
+
+        // Hash the new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update the user's password in the database
+        user.password = hashedPassword;
+        await user.save();
+
+        // Generate a new JWT token with updated user information (optional)
+        const token = jwt.sign({ userId: user._id, email: user.email }, process.env.JWT_SECRET);
+
+        // Respond with success message and token
+        res.status(StatusCodes.OK).json({ message: 'Password changed successfully', token });
+    } catch (error) {
+        // Handle errors
+        res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    }
+};
 
 module.exports = {
-    users, usersId, usersUpdate, usersDelete
+    users, usersId, usersUpdate, usersDelete, changePassword
 
 }

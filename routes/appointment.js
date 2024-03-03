@@ -8,4 +8,5 @@ router.post('/request/:id', requestSchedule)
 router.put('/verify/:id', verifySchedule)
 router.put('/edit/:id', editSchedule)
 router.put('/consult/:id', makeConsult)
+
 module.exports = router
