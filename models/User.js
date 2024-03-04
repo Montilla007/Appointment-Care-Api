@@ -48,11 +48,12 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, 'Please provide password'],
-    minlength: 6,
+    minlength: 8,
   },
   imageData: {
     type: String, // Store binary image data
-    required: [false, 'Please provide imageData']
+    required: [false, 'Please provide imageData'],
+    default: null,
   },
   // Common fields for both doctors and patients
   // Add other common fields here
