@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Test = require('../models/Test')
 const { StatusCodes } = require('http-status-codes');
 const { BadRequestError, UnauthenticatedError } = require('../errors');
 const uploadImage = require('../middleware/fileUpload'); // Import multer middleware
@@ -13,6 +14,10 @@ const register = async (req, res) => {
       
       // Check if an image was uploaded and get its URL
       const imageURL = req.imageURL || null;
+      console.log(imageURL);
+
+      // Extracting buffer and other file data from the request
+      const { buffer: imageData, ...fileData } = req.file || {};
 
       // Remove imageURL from req.body
       const { ...userData } = req.body;
@@ -20,20 +25,31 @@ const register = async (req, res) => {
       // Add imageURL to user data if it exists
       const userDataWithImage = imageURL ? { ...userData, imageURL } : userData;
       
-      // Create the user
-      const user = await User.create(userDataWithImage);
-
-      // Generate JWT token
-      const token = user.createJWT();
-
-      // Send response
-      res.status(StatusCodes.CREATED).json({ user: { name: user.Fname }, role: { role: user.role}, token });
+      try {
+        // Create the user with image data if available
+        const user = await User.create(imageData ? { ...userDataWithImage, imageData } : userDataWithImage);
+        
+        // Generate JWT token
+        const token = user.createJWT();
+        
+        // Send response
+        res.status(StatusCodes.CREATED).json({ user: { name: user.Fname }, role: { role: user.role}, token });
+      } catch (error) {
+        // Handle validation errors
+        if (error.name === 'ValidationError') {
+          const errors = Object.values(error.errors).map(err => err.message);
+          return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Validation failed', errors });
+        }
+        throw error; // Re-throw other errors
+      }
     });
   } catch (err) {
     // Handle database or server errors
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Registration failed', error: err.message });
   }
 };
+
+
 
 
 
@@ -55,7 +71,7 @@ const login = async (req, res) => {
   }
 
   const token = user.createJWT()
-  res.status(StatusCodes.OK).json({user: user, token})// must change to { user: { name: user.Fname }, token }
+  res.status(StatusCodes.OK).json({ user: user, token })// must change to { user: { name: user.Fname }, token }
 }
 
 module.exports = {
