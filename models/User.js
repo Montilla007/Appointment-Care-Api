@@ -23,7 +23,6 @@ const userSchema = new mongoose.Schema({
   number: {
     type: String,
     required: [true, 'Please provide number'],
-    maxLength: 12,
   },
   gender: {
     type: String,
