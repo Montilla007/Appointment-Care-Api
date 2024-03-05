@@ -1,5 +1,4 @@
 const User = require('../models/User');
-const Test = require('../models/Test')
 const { StatusCodes } = require('http-status-codes');
 const { BadRequestError, UnauthenticatedError } = require('../errors');
 const uploadImage = require('../middleware/fileUpload'); // Import multer middleware
