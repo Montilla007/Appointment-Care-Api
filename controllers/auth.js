@@ -10,27 +10,23 @@ const register = async (req, res) => {
       if (err) {
         return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Image upload failed', error: err.message });
       }
-      
-      // Check if an image was uploaded and get its URL
+
+      // Check if an image was uploaded and get its download URL
       const imageURL = req.imageURL || null;
-      console.log(imageURL);
 
-      // Extracting buffer and other file data from the request
-      const { buffer: imageData, ...fileData } = req.file || {};
-
-      // Remove imageURL from req.body
+      // Extracting other file data from the request
       const { ...userData } = req.body;
 
       // Add imageURL to user data if it exists
       const userDataWithImage = imageURL ? { ...userData, imageURL } : userData;
-      
+
       try {
         // Create the user with image data if available
-        const user = await User.create(imageData ? { ...userDataWithImage, imageData } : userDataWithImage);
-        
+        const user = await User.create(userDataWithImage);
+
         // Generate JWT token
         const token = user.createJWT();
-        
+
         // Send response
         res.status(StatusCodes.CREATED).json({ user: { name: user.Fname }, role: { role: user.role}, token });
       } catch (error) {
@@ -47,6 +43,7 @@ const register = async (req, res) => {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Registration failed', error: err.message });
   }
 };
+
 
 
 

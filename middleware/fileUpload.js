@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const { initializeApp, getApp } = require("firebase/app");
-const { getStorage, ref, uploadBytes } = require("firebase/storage");
+const { getStorage, ref, uploadBytes, getDownloadURL  } = require("firebase/storage");
 const multer = require("multer");
 const { StatusCodes } = require("http-status-codes");
 const path = require("path"); // Import the path module
@@ -50,12 +50,12 @@ function checkFileType(file, cb) {
   }
 }
 
-// Function to upload image to Firebase Storage
+// Function to upload image to Firebase Storage and get the download URL
 async function uploadImageToStorage(file) {
   const storageRef = ref(storage, `images/${file.originalname}`);
   await uploadBytes(storageRef, file.buffer);
-  const imageUrl = `https://storage.googleapis.com/${storage.bucket}/images/${file.originalname}`;
-  return imageUrl;
+  const downloadURL = await getDownloadURL(storageRef);
+  return downloadURL;
 }
 
 // Middleware function to handle image uploads and save image URL to req.imageURL
@@ -71,8 +71,8 @@ function uploadImage(req, res, next) {
     }
 
     try {
-      const imageUrl = await uploadImageToStorage(req.file);
-      req.imageURL = imageUrl; // Save the image URL in the request object
+      const imageURL = await uploadImageToStorage(req.file);
+      req.imageURL = imageURL; // Save the image URL in the request object
       next(); // Call the next middleware or route handler
     } catch (error) {
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Error uploading image to Firebase Storage: " + error.message });

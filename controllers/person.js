@@ -98,26 +98,21 @@ const getImage = async (req, res) => {
   try {
     const imageId = req.params.id;
 
-    // Find the document containing the image data by its ID
+    // Find the document containing the image URL by its ID
     const user = await User.findById(imageId);
 
-    if (!user) {
+    if (!user || !user.imageData) {
       return res.status(404).json({ error: 'Image not found' });
     }
 
-    // Access the imageData field containing the Buffer
-    const imageData = user.imageData;
-
-    // Set the response content type as image/jpeg or any other appropriate format
-    res.contentType('image/jpeg');
-
-    // Send the image data as the response
-    res.send(imageData);
+    // Send the image URL as the response
+    res.status(200).json({ imageURL: user.imageData });
   } catch (error) {
     console.error('Error retrieving image:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
 
 
 module.exports = {
