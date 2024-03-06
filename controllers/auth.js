@@ -18,7 +18,7 @@ const register = async (req, res) => {
       const { ...userData } = req.body;
 
       // Add imageURL to user data if it exists
-      const userDataWithImage = imageURL ? { ...userData, imageURL } : userData;
+      const userDataWithImage = imageURL ? { ...userData, imageData: imageURL } : userData;
 
       try {
         // Create the user with image data if available
