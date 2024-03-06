@@ -18,6 +18,9 @@ const register = async (req, res) => {
       // Extracting buffer and other file data from the request
       const { buffer: imageData, ...fileData } = req.file || {};
 
+      // Convert image data from binary to base64 encoded string
+      const imageDataAsString = imageData.toString('base64');
+
       // Remove imageURL from req.body
       const { ...userData } = req.body;
 
@@ -26,7 +29,7 @@ const register = async (req, res) => {
       
       try {
         // Create the user with image data if available
-        const user = await User.create(imageData ? { ...userDataWithImage, imageData } : userDataWithImage);
+        const user = await User.create(imageData ? { ...userDataWithImage, imageData: imageDataAsString } : userDataWithImage);
         
         // Generate JWT token
         const token = user.createJWT();
@@ -47,6 +50,7 @@ const register = async (req, res) => {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Registration failed', error: err.message });
   }
 };
+
 
 
 
