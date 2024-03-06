@@ -51,7 +51,7 @@ const scheduleSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['Pending', 'Accepted', 'Rejected', 'Request', 'Dismiss'],
+        enum: ['Pending', 'Accepted', 'Rejected', 'Request', 'Dismiss', 'Done'],
         default: 'Pending'
     },
     symptoms: {

@@ -1,10 +1,11 @@
 const express = require('express')
 const router = express.Router()
 
-const { users, usersId, usersUpdate, usersDelete, changePassword } = require('../controllers/person')
+const { users, usersId, usersUpdate, usersDelete, changePassword, getImage } = require('../controllers/person')
 
 router.get('/users', users)
 router.get('/users/:id', usersId)
+router.get('/profile/:id', getImage)
 router.put('/users/:id', usersUpdate)
 router.delete('/users/:id', usersDelete)
 router.put('/password/:id', changePassword)

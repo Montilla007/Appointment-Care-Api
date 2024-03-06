@@ -94,9 +94,33 @@ const changePassword = async (req, res) => {
     res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
   }
 };
+const getImage = async (req, res) => {
+  try {
+    const imageId = req.params.id;
+
+    // Find the document containing the image data by its ID
+    const user = await User.findById(imageId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'Image not found' });
+    }
+
+    // Access the imageData field containing the Buffer
+    const imageData = user.imageData;
+
+    // Set the response content type as image/jpeg or any other appropriate format
+    res.contentType('image/jpeg');
+
+    // Send the image data as the response
+    res.send(imageData);
+  } catch (error) {
+    console.error('Error retrieving image:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
 
 
 module.exports = {
-  users, usersId, usersUpdate, usersDelete, changePassword
+  users, usersId, usersUpdate, usersDelete, changePassword, getImage
 
 }
