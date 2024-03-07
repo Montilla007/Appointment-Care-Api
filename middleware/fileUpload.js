@@ -99,4 +99,5 @@ function uploadLicense(req, res, next) {
 }
 
 
-module.exports = uploadImage, uploadLicense;
+module.exports = { uploadImage, uploadLicense };
+
