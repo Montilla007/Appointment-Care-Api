@@ -55,7 +55,7 @@ async function uploadImageToStorage(file) {
 
 // Middleware function to handle image uploads and save image URL to req.imageURL
 const uploadSingleImage = multerConfig.single("image");
-const uploadLicensesImage = multerConfig.single("licensePicture");
+
 function uploadImage(req, res, next) {
     uploadSingleImage(req, res, async function (err) {
         if (err instanceof multer.MulterError) {
@@ -75,6 +75,9 @@ function uploadImage(req, res, next) {
         }
     });
 }
+
+// Middleware function to handle image uploads and save image URL to req.licenseURL
+const uploadLicensesImage = multerConfig.single("licensePicture");
 function uploadLicense(req, res, next) {
     uploadLicensesImage(req, res, async function (err) {
         if (err instanceof multer.MulterError) {
@@ -87,7 +90,7 @@ function uploadLicense(req, res, next) {
         }
         try {
             const licenseURL = await uploadImageToStorage(req.file);
-            req.licenseURL = licenseURL; // Save the image URL in the request object
+            req.licensePictureURL  = licenseURL; // Save the image URL in the request object
             next(); // Call the next middleware or route handler
         } catch (error) {
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Error uploading image to Firebase Storage: " + error.message });
