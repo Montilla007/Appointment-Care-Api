@@ -24,6 +24,10 @@ const scheduleSchema = new mongoose.Schema({
         ],
         unique: true,
     },
+    imageData: {
+        type: String,
+        required: false,
+    },
     number: {
         type: String,
         required: [true, 'Please provide number'],
