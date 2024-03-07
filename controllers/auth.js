@@ -42,7 +42,8 @@ const register = async (req, res) => {
     } catch (err) {
         // Handle database or server errors
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Registration failed', error: err.message });
-
+    }
+  }
 
 
 
