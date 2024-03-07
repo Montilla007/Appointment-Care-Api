@@ -48,7 +48,7 @@ async function uploadImageToStorage(file) {
 }
 
 // Middleware function to handle profile picture upload and save the URL to req.profilePictureURL
-const uploadProfilePicture = multerConfig.single("profilePicture");
+const uploadProfilePicture = multerConfig.single("image");
 const handleProfilePictureUpload = (req, res, next) => {
     uploadProfilePicture(req, res, async function(err) {
         if (err instanceof multer.MulterError) {
