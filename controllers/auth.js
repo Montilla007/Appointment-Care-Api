@@ -11,7 +11,6 @@ const register = async (req, res) => {
                 return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Image upload failed', error: err.message });
             }
 
-
             // Check if an image was uploaded and get its download URL
             const imageURL = req.imageURL || null;
 
@@ -43,7 +42,7 @@ const register = async (req, res) => {
         // Handle database or server errors
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Registration failed', error: err.message });
     }
-}
+};
 
 
 

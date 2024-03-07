@@ -7,6 +7,7 @@ const { StatusCodes } = require("http-status-codes");
 const path = require("path"); // Import the path module
 
 // Rest of your middleware code...
+
 // Check if Firebase app is already initialized
 let firebaseApp;
 try {
@@ -33,6 +34,7 @@ const upload = multer({
         checkFileType(file, cb);
     }
 }).single("image");
+
 // Check file type
 function checkFileType(file, cb) {
     const filetypes = /jpeg|jpg|png|gif/;
@@ -73,5 +75,4 @@ function uploadImage(req, res, next) {
         }
     });
 }
-
 module.exports = uploadImage;
