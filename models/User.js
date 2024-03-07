@@ -120,6 +120,12 @@ const userSchema = new mongoose.Schema({
       return this.role === 'Doctor';
     },
   },
+  imageLicense: {
+    type: String,
+    required: function () {
+      return this.role === 'Doctor';
+    }
+  }
 });
 
 userSchema.pre('save', async function () {

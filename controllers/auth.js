@@ -1,48 +1,80 @@
 const User = require('../models/User');
 const { StatusCodes } = require('http-status-codes');
 const { BadRequestError, UnauthenticatedError } = require('../errors');
-const uploadImage = require('../middleware/fileUpload'); // Import multer middleware
+const { uploadProfilePicture, uploadLicensePicture} = require('../middleware/fileUpload'); // Import multer middleware
 
 const register = async (req, res) => {
   try {
-    // Upload the image using the middleware
-    uploadImage(req, res, async function(err) {
-      if (err) {
-        return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Image upload failed', error: err.message });
+      // Extract user data from request body
+      const { role, fullName, email, ...otherUserData } = req.body;
+
+      // Check if the user is a Doctor
+      if (role === 'Doctor') {
+          // Upload the profile picture and license picture using the middleware
+          uploadProfilePicture(req, res, async function(err) {
+              if (err) {
+                  return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Profile picture upload failed', error: err.message });
+              }
+
+              uploadLicensePicture(req, res, async function(err) {
+                  if (err) {
+                      return res.status(StatusCodes.BAD_REQUEST).json({ message: 'License picture upload failed', error: err.message });
+                  }
+
+                  // Check if profile picture and license picture were uploaded successfully
+                  const imageData = req.profilePictureURL || null; // imageData
+                  const imageLicense = req.licensePictureURL || null; //imageLicense
+
+                  // Create the user with profile and license picture URLs
+                  const user = await User.create({
+                      role,
+                      fullName,
+                      email,
+                      imageData,
+                      imageLicense,
+                      ...otherUserData
+                  });
+
+                  // Generate JWT token
+                  const token = user.createJWT();
+
+                  // Send response with user details and token
+                  res.status(StatusCodes.CREATED).json({ user: { role, fullName, email, profilePictureURL: imageData, licensePictureURL }, token });
+              });
+          });
+      } else {
+          // If the user is not a Doctor, skip license picture upload
+          // Upload only the profile picture
+          uploadProfilePicture(req, res, async function(err) {
+              if (err) {
+                  return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Profile picture upload failed', error: err.message });
+              }
+
+              // Check if profile picture was uploaded successfully
+              const imageData = req.profilePictureURL || null;
+
+              // Create the user with only the profile picture URL
+              const user = await User.create({
+                  role,
+                  fullName,
+                  email,
+                  imageData,
+                  ...otherUserData
+              });
+
+              // Generate JWT token
+              const token = user.createJWT();
+
+              // Send response with user details and token
+              res.status(StatusCodes.CREATED).json({ user: { role, fullName, email, profilePictureURL }, token });
+          });
       }
-
-      // Check if an image was uploaded and get its download URL
-      const imageURL = req.imageURL || null;
-
-      // Extracting other file data from the request
-      const { ...userData } = req.body;
-
-      // Add imageURL to user data if it exists
-      const userDataWithImage = imageURL ? { ...userData, imageData: imageURL } : userData;
-
-      try {
-        // Create the user with image data if available
-        const user = await User.create(userDataWithImage);
-
-        // Generate JWT token
-        const token = user.createJWT();
-
-        // Send response
-        res.status(StatusCodes.CREATED).json({ user: { name: user.Fname }, role: { role: user.role}, token });
-      } catch (error) {
-        // Handle validation errors
-        if (error.name === 'ValidationError') {
-          const errors = Object.values(error.errors).map(err => err.message);
-          return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Validation failed', errors });
-        }
-        throw error; // Re-throw other errors
-      }
-    });
-  } catch (err) {
-    // Handle database or server errors
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Registration failed', error: err.message });
+  } catch (error) {
+      // Handle database or server errors
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Registration failed', error: error.message });
   }
 };
+
 
 
 
