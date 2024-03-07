@@ -9,7 +9,7 @@ const register = async (req, res) => {
     const { role, ...userData } = req.body;
 
     // Check if the role is Doctor or Patient
-    if (role === 'Doctor') {
+    if (role === "Doctor") {
       // For Doctor, upload the image and license using the middleware
       uploadImage(req, res, async function (err) {
         if (err) {
