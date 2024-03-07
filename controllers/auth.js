@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const { StatusCodes } = require('http-status-codes');
 const { BadRequestError, UnauthenticatedError } = require('../errors');
-const { uploadProfilePicture, uploadLicensePicture} = require('../middleware/fileUpload'); // Import multer middleware
+const { handleProfilePictureUpload, handleLicensePictureUpload } = require('../middleware/fileUpload'); // Import multer middleware
 
 const register = async (req, res) => {
   try {
@@ -11,12 +11,12 @@ const register = async (req, res) => {
       // Check if the user is a Doctor
       if (role === 'Doctor') {
           // Upload the profile picture and license picture using the middleware
-          uploadProfilePicture(req, res, async function(err) {
+          handleProfilePictureUpload(req, res, async function(err) {
               if (err) {
                   return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Profile picture upload failed', error: err.message });
               }
 
-              uploadLicensePicture(req, res, async function(err) {
+              handleLicensePictureUpload(req, res, async function(err) {
                   if (err) {
                       return res.status(StatusCodes.BAD_REQUEST).json({ message: 'License picture upload failed', error: err.message });
                   }
@@ -45,7 +45,7 @@ const register = async (req, res) => {
       } else {
           // If the user is not a Doctor, skip license picture upload
           // Upload only the profile picture
-          uploadProfilePicture(req, res, async function(err) {
+          handleProfilePictureUpload(req, res, async function(err) {
               if (err) {
                   return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Profile picture upload failed', error: err.message });
               }
