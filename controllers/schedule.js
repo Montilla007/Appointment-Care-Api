@@ -23,11 +23,11 @@ const getSchedule = async (req, res, next) => {
 const requestSchedule = async (req, res) => {
     // Extract patient and doctor IDs from request body
     const { id } = req.params;
-    const { fullName, email,imageData, number, doctorId, date, time, online, f2f } = req.body;
+    const { fullName, email, number, doctorId, date, time, online, f2f } = req.body;
 
     try {
         // Create a new schedule entry
-        const schedule = await Schedule.create({ patientId: id, doctorId, fullName, email,imageData, number, date, time, online, f2f });
+        const schedule = await Schedule.create({ patientId: id, doctorId, fullName, email, number, date, time, online, f2f });
         res.status(StatusCodes.CREATED).json({ schedule });
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
