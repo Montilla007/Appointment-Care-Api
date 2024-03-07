@@ -26,13 +26,13 @@ try {
 const storage = getStorage(firebaseApp);
 
 // Multer configuration for handling image uploads
-const upload = multer({
+const multerConfig = multer({
     storage: multer.memoryStorage(),
     limits: { fileSize: 5 * 1024 * 1024 }, // 5MB file size limit
     fileFilter: function (req, file, cb) {
         checkFileType(file, cb);
     }
-}).single("image");
+})
 // Check file type
 function checkFileType(file, cb) {
     const filetypes = /jpeg|jpg|png|gif/;
@@ -54,8 +54,10 @@ async function uploadImageToStorage(file) {
 }
 
 // Middleware function to handle image uploads and save image URL to req.imageURL
+const uploadSingleImage = multerConfig.single("image");
+
 function uploadImage(req, res, next) {
-    upload(req, res, async function (err) {
+    uploadSingleImage(req, res, async function (err) {
         if (err instanceof multer.MulterError) {
             return res.status(StatusCodes.BAD_REQUEST).json({ error: "Multer error: " + err.message });
         } else if (err) {
@@ -73,5 +75,6 @@ function uploadImage(req, res, next) {
         }
     });
 }
+
 
 module.exports = uploadImage;
