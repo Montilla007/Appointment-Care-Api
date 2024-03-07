@@ -7,7 +7,7 @@ const register = async (req, res) => {
   try {
     // Extracting role from the request body
     const { role, ...userData } = req.body;
-
+    console.log(role);
     // Check if the role is Doctor or Patient
     if (role === "Doctor") {
       // For Doctor, upload the image and license using the middleware
