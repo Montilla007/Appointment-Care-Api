@@ -4,14 +4,12 @@ const { BadRequestError, UnauthenticatedError } = require('../errors');
 const { uploadImage, uploadLicense } = require('../middleware/fileUpload'); // Import multer middleware
 
 const register = async (req, res) => {
-
   const { ...userData } = req.body;
-    const role = req.body.role;
+  const role = req.body.role;
 
   try {
     // Extracting role from the request body
-    // const { ...userData } = req.body;
-    // const role = req.body.role;
+
     // Check if the role is Doctor or Patient
     if (role === "Doctor") {
       // For Doctor, upload the image and license using the middleware
@@ -80,6 +78,7 @@ const register = async (req, res) => {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Registration failed', error: err.message });
   }
 };
+
 
 
 
