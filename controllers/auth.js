@@ -68,7 +68,7 @@ const register = async (req, res) => {
       }
     } else {
       // Invalid role
-      return res.status(StatusCodes.BAD_REQUEST).json({ message: `Invalid role: ${req.body}` });
+      return res.status(StatusCodes.BAD_REQUEST).json({ message: `Invalid role: ${userData}` });
 
     }
   } catch (err) {
