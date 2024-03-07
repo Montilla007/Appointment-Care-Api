@@ -6,8 +6,8 @@ const { uploadImage, uploadLicense } = require('../middleware/fileUpload'); // I
 const register = async (req, res) => {
   try {
     // Extracting role from the request body
-    const { role, ...userData } = req.body;
-    console.log(role);
+    const { ...userData } = req.body;
+    const role = req.body.role;
     // Check if the role is Doctor or Patient
     if (role === "Doctor") {
       // For Doctor, upload the image and license using the middleware
