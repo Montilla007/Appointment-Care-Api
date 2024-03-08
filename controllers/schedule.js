@@ -84,11 +84,11 @@ const verifySchedule = async (req, res) => {
 
 const editSchedule = async (req, res) => {
     try {
-        const { id } = req.params;
+        const id = req.params.id;
         const { date, time, status, online } = req.body; // New date for rescheduling
 
         // Find the schedule by ID
-        const schedule = await Schedule.findOne({ patientId: id });
+        const schedule = await Schedule.findById(id);
 
         if (!schedule) {
             return res.status(StatusCodes.NOT_FOUND).json({ message: 'Schedule not found' });
@@ -122,7 +122,7 @@ const makeConsult = async (req, res) => {
 
         // Update the schedule with observation and prescription
         const updatedSchedule = await Schedule.findOneAndUpdate(
-            { doctorId: id, patientId },
+            { _id: id, patientId },
             { symptoms: symptom, observation: observation, prescription: prescription },
             { new: true } // Return the updated document
         );
