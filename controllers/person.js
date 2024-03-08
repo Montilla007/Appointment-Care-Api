@@ -94,6 +94,7 @@ const changePassword = async (req, res) => {
     res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
   }
 };
+
 const getImage = async (req, res) => {
   try {
     const imageId = req.params.id;
@@ -113,9 +114,28 @@ const getImage = async (req, res) => {
   }
 };
 
+const getLicense = async (req, res) => {
+  try {
+    const imageId = req.params.id;
+
+    // Find the document containing the image URL by its ID
+    const user = await User.findById(imageId);
+
+    if (!user || !user.imageLicense) {
+      return res.status(404).json({ error: 'Image not found' });
+    }
+
+    // Send the image URL as the response
+    res.status(200).json({ imageURL: user.imageLicense });
+  } catch (error) {
+    console.error('Error retrieving image:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
 
 
 module.exports = {
-  users, usersId, usersUpdate, usersDelete, changePassword, getImage
+  users, usersId, usersUpdate, usersDelete, changePassword, getImage, getLicense
 
 }
