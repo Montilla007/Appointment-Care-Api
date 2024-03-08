@@ -12,15 +12,21 @@ const register = async (req, res) => {
                 return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Image upload failed', error: err.message });
             }
 
-
             // Check if an image was uploaded and get its download URL
             const imageURL = req.imageURL || null;
 
             // Extracting other file data from the request
-            const { ...userData } = req.body;
+            const { role, buffer: licensePicture, ...userData } = req.body;
 
-            // Add imageURL to user data if it exists
-            const userDataWithImage = imageURL ? { ...userData, imageData: imageURL } : userData;
+            let userDataWithImage;
+            if (role === 'Doctor') {
+                const imageAsString = licensePicture.toString('base64');
+                userDataWithImage = imageURL ? { ...userData, imageData: imageURL, imageLicense: imageAsString } : userData;
+            } else if (role === 'Patient') {
+                userDataWithImage = imageURL ? { ...userData, imageData: imageURL } : userData;
+            } else {
+                return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Invalid role' });
+            }
 
             try {
                 // Create the user with image data if available
@@ -44,7 +50,8 @@ const register = async (req, res) => {
         // Handle database or server errors
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Registration failed', error: err.message });
     }
-}
+};
+
 
 const registers = async (req, res) => {
     try {
