@@ -31,7 +31,6 @@ const scheduleSchema = new mongoose.Schema({
     number: {
         type: String,
         required: [true, 'Please provide number'],
-        maxLength: 12,
     },
     online: {
         type: Boolean,

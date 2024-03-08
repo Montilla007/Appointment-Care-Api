@@ -31,8 +31,7 @@ const multerConfig = multer({
     fileFilter: function (req, file, cb) {
         checkFileType(file, cb);
     }
-}).single("image");
-
+}).single("licensePicture");
 
 // Check file type
 function checkFileType(file, cb) {
@@ -54,8 +53,8 @@ async function uploadImageToStorage(file) {
     return downloadURL;
 }
 
-// Middleware function to handle image uploads and save image URL to req.imageURL
-function uploadImage(req, res, next) {
+// Middleware function to handle image uploads and save image URL to req.licenseURL
+function uploadLicense(req, res, next) {
     multerConfig(req, res, async function (err) {
         if (err instanceof multer.MulterError) {
             return res.status(StatusCodes.BAD_REQUEST).json({ error: "Multer error: " + err.message });
@@ -66,8 +65,8 @@ function uploadImage(req, res, next) {
             return res.status(StatusCodes.BAD_REQUEST).json({ error: "No image uploaded" });
         }
         try {
-            const imageURL = await uploadImageToStorage(req.file);
-            req.imageURL = imageURL; // Save the image URL in the request object
+            const licenseURL = await uploadImageToStorage(req.file);
+            req.licensePictureURL  = licenseURL; // Save the image URL in the request object
             next(); // Call the next middleware or route handler
         } catch (error) {
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Error uploading image to Firebase Storage: " + error.message });
@@ -75,4 +74,4 @@ function uploadImage(req, res, next) {
     });
 }
 
-module.exports = uploadImage;
+module.exports = uploadLicense;
