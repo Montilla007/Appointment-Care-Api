@@ -36,10 +36,10 @@ const requestSchedule = async (req, res) => {
 
 const verifySchedule = async (req, res) => {
     try {
-        const id  = req.params.id;
-        const { patientId, status } = req.body;
+        const id = req.params.id;
+        const { status } = req.body;
 
-        const schedule = await Schedule.findById(id);
+        const schedule = await Schedule.findById({ _id: id });
 
         if (!schedule) {
             throw new NotFoundError('No schedule found');
@@ -67,7 +67,7 @@ const verifySchedule = async (req, res) => {
         }
 
         const updatedSchedule = await Schedule.findOneAndUpdate(
-            { _id: id, patientId },
+            { _id: id },
             update,
             { new: true }
         );
@@ -114,7 +114,7 @@ const editSchedule = async (req, res) => {
 
 const makeConsult = async (req, res) => {
     const { id } = req.params; // Access the 'id' parameter from the request params
-    const { patientId, symptoms, observation, prescription } = req.body;
+    const { symptoms, observation, prescription } = req.body;
 
     try {
         // Ensure observation is always an array
@@ -122,7 +122,7 @@ const makeConsult = async (req, res) => {
 
         // Update the schedule with observation and prescription
         const updatedSchedule = await Schedule.findOneAndUpdate(
-            { _id: id, patientId },
+            { _id: id},
             { symptoms: symptom, observation: observation, prescription: prescription },
             { new: true } // Return the updated document
         );
@@ -138,6 +138,21 @@ const makeConsult = async (req, res) => {
     };
 };
 
+const cancelConsult = async (req, res) => {
+    try {
+        const id = req.params.id; // Access the 'id' parameter from the request params
+
+        const deleteConsult = await Schedule.findByIdAndDelete({_id: id});
+
+        if (!deleteConsult) {
+            throw new NotFoundError('No schedule found', id);
+        }
+        res.status(StatusCodes.OK).json({ message: 'Schedule successfully deleted' });
+    } catch (error) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    }
+}
+
 // Implement other controller methods for accepting/rejecting and rescheduling appointments
 
-module.exports = { getSchedule, requestSchedule, verifySchedule, editSchedule, makeConsult };
+module.exports = { getSchedule, requestSchedule, verifySchedule, editSchedule, makeConsult, cancelConsult };
