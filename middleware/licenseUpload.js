@@ -1,31 +1,23 @@
-require('dotenv').config();
-
-const { initializeApp, getApp } = require("firebase/app");
-const { getStorage, ref, uploadBytes, getDownloadURL } = require("firebase/storage");
-const multer = require("multer");
+const { getDownloadURL, ref, uploadBytes } = require("firebase/storage");
 const { StatusCodes } = require("http-status-codes");
-const path = require("path"); // Import the path module
+const multer = require("multer");
+const path = require("path");
+const { initializeApp, getApp } = require("firebase/app");
+const { getStorage } = require("firebase/storage");
+const { firebaseConfig } = require("./firebaseConfig"); // Assuming you have a file named firebaseConfig.js with your Firebase configuration
 
-// Rest of your middleware code...
-// Check if Firebase app is already initialized
+// Initialize Firebase app
 let firebaseApp;
 try {
     firebaseApp = getApp();
 } catch (error) {
-    const firebaseConfig = {
-        apiKey: process.env.apiKey,
-        authDomain: process.env.authDomain,
-        projectId: process.env.projectId,
-        storageBucket: process.env.storageBucket,
-        messagingSenderId: process.env.messagingSenderId,
-        appId: process.env.appId,
-        measurementId: process.env.measurementId
-    };
     firebaseApp = initializeApp(firebaseConfig);
 }
+
+// Get Firebase storage instance
 const storage = getStorage(firebaseApp);
 
-// Multer configuration for handling image uploads
+// Multer configuration
 const upload = multer({
     storage: multer.memoryStorage(),
     limits: { fileSize: 5 * 1024 * 1024 }, // 5MB file size limit
@@ -33,6 +25,7 @@ const upload = multer({
         checkFileType(file, cb);
     }
 }).single("licensePicture");
+
 // Check file type
 function checkFileType(file, cb) {
     const filetypes = /jpeg|jpg|png|gif/;
@@ -53,7 +46,7 @@ async function uploadImageToStorage(file) {
     return downloadURL;
 }
 
-// Middleware function to handle image uploads and save image URL to req.imageURL
+// Middleware function to handle image uploads and save image URL to req.licensePictureURL
 function uploadLicense(req, res, next) {
     upload(req, res, async function (err) {
         if (err instanceof multer.MulterError) {
