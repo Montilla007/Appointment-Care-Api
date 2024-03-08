@@ -65,10 +65,10 @@ const register = async (req, res) => {
                 const { ...userData } = req.body;
 
                 // Add profileImageURL to user data if it exists
-                const userDataWithImage = { profileImageURL, licenseImageURL } ? { ...userData, imageData: profileImageURL, imageLicense: licenseImageURL } : userData;
+                const userDataWithImage = profileImageURL && licenseImageURL ? { ...userData, imageData: profileImageURL, imageLicense: licenseImageURL } : userData;
 
                 try {
-                    // Create the doctor user with profile and license image URLs
+                    // Create the user with profile and license image URLs
                     const user = await User.create(userDataWithImage);
 
                     // Send response
@@ -88,6 +88,7 @@ const register = async (req, res) => {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Doctor registration failed', error: err.message });
     }
 };
+
 
 
 
