@@ -39,7 +39,7 @@ const verifySchedule = async (req, res) => {
         const { id } = req.params;
         const { patientId, status } = req.body;
 
-        const schedule = await Schedule.findOne({ doctorId: id, patientId });
+        const schedule = await Schedule.findOne({ id, patientId });
 
         if (!schedule) {
             throw new NotFoundError('No schedule found');
