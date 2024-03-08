@@ -2,11 +2,11 @@ const User = require('../models/User');
 const { StatusCodes } = require('http-status-codes');
 const { BadRequestError, UnauthenticatedError } = require('../errors');
 const uploadImage = require('../middleware/fileUpload'); // Import multer middleware
-
+const uploadLicense = require('../middleware/licenseUpload'); // Import multer middleware
 const register = async (req, res) => {
     try {
         // Upload the image using the middleware
-        uploadImage(req, res, async function (err) {
+        uploadLicense(req, res, async function (err) {
             if (err) {
                 return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Image upload failed', error: err.message });
             }

@@ -6,6 +6,7 @@ const multer = require("multer");
 const { StatusCodes } = require("http-status-codes");
 const path = require("path"); // Import the path module
 
+// Rest of your middleware code...
 // Check if Firebase app is already initialized
 let firebaseApp;
 try {
@@ -25,14 +26,13 @@ try {
 const storage = getStorage(firebaseApp);
 
 // Multer configuration for handling image uploads
-const multerConfig = multer({
+const upload = multer({
     storage: multer.memoryStorage(),
     limits: { fileSize: 5 * 1024 * 1024 }, // 5MB file size limit
     fileFilter: function (req, file, cb) {
         checkFileType(file, cb);
     }
 }).single("licensePicture");
-
 // Check file type
 function checkFileType(file, cb) {
     const filetypes = /jpeg|jpg|png|gif/;
@@ -53,9 +53,9 @@ async function uploadImageToStorage(file) {
     return downloadURL;
 }
 
-// Middleware function to handle image uploads and save image URL to req.licenseURL
+// Middleware function to handle image uploads and save image URL to req.imageURL
 function uploadLicense(req, res, next) {
-    multerConfig(req, res, async function (err) {
+    upload(req, res, async function (err) {
         if (err instanceof multer.MulterError) {
             return res.status(StatusCodes.BAD_REQUEST).json({ error: "Multer error: " + err.message });
         } else if (err) {
@@ -66,7 +66,7 @@ function uploadLicense(req, res, next) {
         }
         try {
             const licenseURL = await uploadImageToStorage(req.file);
-            req.licensePictureURL  = licenseURL; // Save the image URL in the request object
+            req.licensePictureURL = licenseURL; // Save the image URL in the request object
             next(); // Call the next middleware or route handler
         } catch (error) {
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Error uploading image to Firebase Storage: " + error.message });
