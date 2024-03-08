@@ -3,7 +3,8 @@ const { StatusCodes } = require('http-status-codes');
 const { BadRequestError, UnauthenticatedError } = require('../errors');
 const uploadImage = require('../middleware/fileUpload'); // Import multer middleware
 const uploadLicense = require('../middleware/licenseUpload'); // Import multer middleware
-const register = async (req, res) => {
+
+const registerDoctor = async (req, res) => {
     try {
         // Upload the image using the middleware
         uploadImage(req, res, async function (err) {
@@ -45,9 +46,63 @@ const register = async (req, res) => {
     }
   }
 
-// const registerDoctor = async (req, res) => {
+  const register = async (req, res) => {
+    try {
+        // Upload the profile image using the middleware
+        uploadImage(req, res, async function (err) {
+            if (err) {
+                return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Profile image upload failed', error: err.message });
+            }
 
-// }
+            // Check if a profile image was uploaded and get its download URL
+            const profileImageURL = req.imageURL || null;
+
+            // Extract other data from the request body
+            const { role, ...userData } = req.body;
+
+            if (role !== 'Doctor') {
+                return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Invalid role for doctor registration' });
+            }
+
+            // Add profileImageURL to user data if it exists
+            const userDataWithProfileImage = profileImageURL ? { ...userData, profileImage: profileImageURL } : userData;
+
+            // Upload the license image using the middleware
+            uploadLicense(req, res, async function (err) {
+                if (err) {
+                    return res.status(StatusCodes.BAD_REQUEST).json({ message: 'License image upload failed', error: err.message });
+                }
+
+                // Check if a license image was uploaded and get its download URL
+                const licenseImageURL = req.licensePictureURL || null;
+
+                // Add licenseImageURL to user data if it exists
+                const userDataWithLicenseImage = licenseImageURL ? { ...userDataWithProfileImage, licenseImage: licenseImageURL } : userDataWithProfileImage;
+
+                try {
+                    // Create the doctor user with profile and license image URLs
+                    const user = await User.create(userDataWithLicenseImage);
+
+                    // Generate JWT token
+                    const token = user.createJWT();
+
+                    // Send response
+                    res.status(StatusCodes.CREATED).json({ user: { name: user.Fname }, role: { role: user.role }, token });
+                } catch (error) {
+                    // Handle validation errors
+                    if (error.name === 'ValidationError') {
+                        const errors = Object.values(error.errors).map(err => err.message);
+                        return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Validation failed', errors });
+                    }
+                    throw error; // Re-throw other errors
+                }
+            });
+        });
+    } catch (err) {
+        // Handle database or server errors
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Doctor registration failed', error: err.message });
+    }
+};
 
 
 
