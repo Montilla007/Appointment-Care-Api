@@ -12,7 +12,6 @@ const register = async (req, res) => {
                 return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Image upload failed', error: err.message });
             }
 
-
             // Check if an image was uploaded and get its download URL
             const imageURL = req.imageURL || null;
 
@@ -30,7 +29,7 @@ const register = async (req, res) => {
                 const token = user.createJWT();
 
                 // Send response
-                res.status(StatusCodes.CREATED).json({ user: { name: user.Fname }, role: { role: user.role }, token });
+                res.status(StatusCodes.CREATED).json({ user: { id: user._id, name: user.Fname }, role: { role: user.role }, token });
             } catch (error) {
                 // Handle validation errors
                 if (error.name === 'ValidationError') {
@@ -44,49 +43,43 @@ const register = async (req, res) => {
         // Handle database or server errors
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Registration failed', error: err.message });
     }
-  }
+}
 
 
 
-const registers = async (req, res) => {
+const registerDoctor = async (req, res) => {
     try {
-        // Upload the profile image using the middleware
-        uploadImage(req, res, async function (err) {
+        // Middleware to upload license image
+        uploadLicense(req, res, async function (err) {
             if (err) {
-                return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Profile image upload failed', error: err.message });
+                return res.status(StatusCodes.BAD_REQUEST).json({ message: 'License image upload failed', error: err.message });
             }
-            uploadLicense(req, res, async function (err) {
-                if (err) {
-                    return res.status(StatusCodes.BAD_REQUEST).json({ message: 'License image upload failed', error: err.message });
+
+            // Extract uploaded image URLs and other user data from request
+            const profileImageURL = req.imageURL || null;
+            const licenseImageURL = req.licenseImageURL || null;
+            const { ...userData } = req.body;
+
+            // Add image URLs to user data if they exist
+            const userDataWithImages = profileImageURL && licenseImageURL ? { ...userData, profileImageURL, licenseImageURL } : userData;
+
+            try {
+                // Create the user with profile and license image URLs
+                const user = await User.create(userDataWithImages);
+
+                // Send successful response
+                res.status(StatusCodes.CREATED).json({ user: { name: user.Fname }, role: { role: user.role } });
+            } catch (error) {
+                // Handle validation errors
+                if (error.name === 'ValidationError') {
+                    const errors = Object.values(error.errors).map(err => err.message);
+                    return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Validation failed', errors });
                 }
-
-                // Check if a profile image was uploaded and get its download URL
-                const profileImageURL = req.imageURL || null;
-                const licenseImageURL = req.licensePictureURL || null;
-
-                const { ...userData } = req.body;
-
-                // Add profileImageURL to user data if it exists
-                const userDataWithImage = profileImageURL && licenseImageURL ? { ...userData, imageData: profileImageURL, imageLicense: licenseImageURL } : userData;
-
-                try {
-                    // Create the user with profile and license image URLs
-                    const user = await User.create(userDataWithImage);
-
-                    // Send response
-                    res.status(StatusCodes.CREATED).json({ user: { name: user.Fname }, role: { role: user.role } });
-                } catch (error) {
-                    // Handle validation errors
-                    if (error.name === 'ValidationError') {
-                        const errors = Object.values(error.errors).map(err => err.message);
-                        return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Validation failed', errors });
-                    }
-                    throw error; // Re-throw other errors
-                }
-            });
+                throw error; // Re-throw other errors
+            }
         });
     } catch (err) {
-        // Handle database or server errors
+        // Handle unexpected errors
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Doctor registration failed', error: err.message });
     }
 };
@@ -124,5 +117,6 @@ const login = async (req, res) => {
 
 module.exports = {
     register,
+    registerDoctor,
     login,
 }

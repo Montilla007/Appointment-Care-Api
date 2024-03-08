@@ -58,9 +58,9 @@ async function uploadImageToStorage(file) {
 function uploadLicense(req, res, next) {
     upload(req, res, async function (err) {
         if (err instanceof multer.MulterError) {
-            return res.status(StatusCodes.BAD_REQUEST).json({ error: "Multer error: " + err.message });
+            return res.status(StatusCodes.BAD_REQUEST).json({ error: "Multer error1: " + err.message });
         } else if (err) {
-            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Error uploading image: " + err.message });
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Error uploading image1: " + err.message });
         }
         if (!req.file) {
             return res.status(StatusCodes.BAD_REQUEST).json({ error: "No image uploaded" });
@@ -68,6 +68,7 @@ function uploadLicense(req, res, next) {
         try {
             const licenseURL = await uploadImageToStorage(req.file);
             req.licensePictureURL = licenseURL; // Save the image URL in the request object
+            console.log(licenseURL);
             next(); // Call the next middleware or route handler
         } catch (error) {
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Error uploading image to Firebase Storage: " + error.message });
