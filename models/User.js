@@ -122,9 +122,7 @@ const userSchema = new mongoose.Schema({
   },
   imageLicense: {
     type: String,
-    required: function () {
-      return this.role === 'Doctor';
-    },
+    required: false,
     default: null
   }
 });
