@@ -4,13 +4,21 @@ const multer = require("multer");
 const path = require("path");
 const { initializeApp, getApp } = require("firebase/app");
 const { getStorage } = require("firebase/storage");
-const { firebaseConfig } = require("./firebaseConfig"); // Assuming you have a file named firebaseConfig.js with your Firebase configuration
 
 // Initialize Firebase app
 let firebaseApp;
 try {
     firebaseApp = getApp();
 } catch (error) {
+    const firebaseConfig = {
+        apiKey: process.env.apiKey,
+        authDomain: process.env.authDomain,
+        projectId: process.env.projectId,
+        storageBucket: process.env.storageBucket,
+        messagingSenderId: process.env.messagingSenderId,
+        appId: process.env.appId,
+        measurementId: process.env.measurementId
+    };
     firebaseApp = initializeApp(firebaseConfig);
 }
 
