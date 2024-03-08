@@ -7,52 +7,45 @@ const uploadLicense = require('../middleware/licenseUpload'); // Import multer m
 const register = async (req, res) => {
     try {
         // Upload the image using the middleware
-        await uploadImage(req, res);
-        
-        // Extract image URL and other file data from the request
-        const imageURL = req.imageURL || null;
-        const { role, buffer: licensePicture, ...userData } = req.body;
+        uploadImage(req, res, async function (err) {
+            if (err) {
+                return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Image upload failed', error: err.message });
+            }
 
-        // Create user data with image based on the role
-        let userDataWithImage;
-        if (role === 'Doctor') {
-            userDataWithImage = await processDoctorData(userData, imageURL, licensePicture);
-        } else if (role === 'Patient') {
-            userDataWithImage = processPatientData(userData, imageURL);
-        } else {
-            return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Invalid role' });
-        }
 
-        // Create user and handle errors
-        const user = await createUser(userDataWithImage);
-        const token = user.createJWT();
-        res.status(StatusCodes.CREATED).json({ user: { name: user.Fname }, role: { role: user.role }, token });
+            // Check if an image was uploaded and get its download URL
+            const imageURL = req.imageURL || null;
+
+            // Extracting other file data from the request
+            const { ...userData } = req.body;
+
+            // Add imageURL to user data if it exists
+            const userDataWithImage = imageURL ? { ...userData, imageData: imageURL } : userData;
+
+            try {
+                // Create the user with image data if available
+                const user = await User.create(userDataWithImage);
+
+                // Generate JWT token
+                const token = user.createJWT();
+
+                // Send response
+                res.status(StatusCodes.CREATED).json({ user: { name: user.Fname }, role: { role: user.role }, token });
+            } catch (error) {
+                // Handle validation errors
+                if (error.name === 'ValidationError') {
+                    const errors = Object.values(error.errors).map(err => err.message);
+                    return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Validation failed', errors });
+                }
+                throw error; // Re-throw other errors
+            }
+        });
     } catch (err) {
         // Handle database or server errors
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Registration failed', error: err.message });
     }
-};
+  }
 
-const processDoctorData = async (userData, imageURL, licensePicture) => {
-    const imageAsString = licensePicture.toString('base64');
-    return imageURL ? { ...userData, imageData: imageURL, imageLicense: imageAsString } : userData;
-};
-
-const processPatientData = (userData, imageURL) => {
-    return imageURL ? { ...userData, imageData: imageURL } : userData;
-};
-
-const createUser = async (userData) => {
-    try {
-        return await User.create(userData);
-    } catch (error) {
-        if (error.name === 'ValidationError') {
-            const errors = Object.values(error.errors).map(err => err.message);
-            throw { message: 'Validation failed', errors };
-        }
-        throw error; // Re-throw other errors
-    }
-};
 
 
 const registers = async (req, res) => {
