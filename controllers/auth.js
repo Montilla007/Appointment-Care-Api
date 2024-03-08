@@ -54,8 +54,6 @@ const createUser = async (userData) => {
     }
 };
 
-module.exports = register;
-
 
 
 const registers = async (req, res) => {
