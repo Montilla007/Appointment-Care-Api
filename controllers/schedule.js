@@ -36,10 +36,10 @@ const requestSchedule = async (req, res) => {
 
 const verifySchedule = async (req, res) => {
     try {
-        const { id } = req.params;
+        const id  = req.params.id;
         const { patientId, status } = req.body;
 
-        const schedule = await Schedule.findOne({ id, patientId });
+        const schedule = await Schedule.findById(id);
 
         if (!schedule) {
             throw new NotFoundError('No schedule found');
@@ -67,7 +67,7 @@ const verifySchedule = async (req, res) => {
         }
 
         const updatedSchedule = await Schedule.findOneAndUpdate(
-            { doctorId: id, patientId },
+            { _id: id, patientId },
             update,
             { new: true }
         );
