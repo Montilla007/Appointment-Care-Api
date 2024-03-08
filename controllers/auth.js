@@ -55,7 +55,6 @@ const createUser = async (userData) => {
 };
 
 
-
 const registers = async (req, res) => {
     try {
         // Upload the profile image using the middleware
