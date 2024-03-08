@@ -44,50 +44,35 @@ const registerDoctor = async (req, res) => {
         // Handle database or server errors
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Registration failed', error: err.message });
     }
-  }
+}
 
-  const register = async (req, res) => {
+const register = async (req, res) => {
     try {
         // Upload the profile image using the middleware
         uploadImage(req, res, async function (err) {
             if (err) {
                 return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Profile image upload failed', error: err.message });
             }
-
-            // Check if a profile image was uploaded and get its download URL
-            const profileImageURL = req.imageURL || null;
-
-            // Extract other data from the request body
-            const { role, ...userData } = req.body;
-
-            if (role !== 'Doctor') {
-                return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Invalid role for doctor registration' });
-            }
-
-            // Add profileImageURL to user data if it exists
-            const userDataWithProfileImage = profileImageURL ? { ...userData, profileImage: profileImageURL } : userData;
-
-            // Upload the license image using the middleware
             uploadLicense(req, res, async function (err) {
                 if (err) {
                     return res.status(StatusCodes.BAD_REQUEST).json({ message: 'License image upload failed', error: err.message });
                 }
 
-                // Check if a license image was uploaded and get its download URL
+                // Check if a profile image was uploaded and get its download URL
+                const profileImageURL = req.imageURL || null;
                 const licenseImageURL = req.licensePictureURL || null;
 
-                // Add licenseImageURL to user data if it exists
-                const userDataWithLicenseImage = licenseImageURL ? { ...userDataWithProfileImage, licenseImage: licenseImageURL } : userDataWithProfileImage;
+                const { ...userData } = req.body;
+
+                // Add profileImageURL to user data if it exists
+                const userDataWithImage = { profileImageURL, licenseImageURL } ? { ...userData, imageData: profileImageURL, imageLicense: licenseImageURL } : userData;
 
                 try {
                     // Create the doctor user with profile and license image URLs
-                    const user = await User.create(userDataWithLicenseImage);
-
-                    // Generate JWT token
-                    const token = user.createJWT();
+                    const user = await User.create(userDataWithImage);
 
                     // Send response
-                    res.status(StatusCodes.CREATED).json({ user: { name: user.Fname }, role: { role: user.role }, token });
+                    res.status(StatusCodes.CREATED).json({ user: { name: user.Fname }, role: { role: user.role } });
                 } catch (error) {
                     // Handle validation errors
                     if (error.name === 'ValidationError') {
@@ -116,25 +101,25 @@ const registerDoctor = async (req, res) => {
 
 
 const login = async (req, res) => {
-  const { email, password } = req.body
+    const { email, password } = req.body
 
-  if (!email || !password) {
-    throw new BadRequestError('Please provide email and password')
-  }
-  const user = await User.findOne({ email })
-  if (!user) {
-    throw new UnauthenticatedError('Invalid Credentials')
-  }
-  const isPasswordCorrect = await user.comparePassword(password)
-  if (!isPasswordCorrect) {
-    throw new UnauthenticatedError('Invalid Credentials')
-  }
+    if (!email || !password) {
+        throw new BadRequestError('Please provide email and password')
+    }
+    const user = await User.findOne({ email })
+    if (!user) {
+        throw new UnauthenticatedError('Invalid Credentials')
+    }
+    const isPasswordCorrect = await user.comparePassword(password)
+    if (!isPasswordCorrect) {
+        throw new UnauthenticatedError('Invalid Credentials')
+    }
 
-  const token = user.createJWT()
-  res.status(StatusCodes.OK).json({ user: user, token })// must change to { user: { name: user.Fname }, token }
+    const token = user.createJWT()
+    res.status(StatusCodes.OK).json({ user: user, token })// must change to { user: { name: user.Fname }, token }
 }
 
 module.exports = {
-  register,
-  login,
+    register,
+    login,
 }
