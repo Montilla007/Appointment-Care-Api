@@ -46,8 +46,7 @@ const register = async (req, res) => {
 }
 
 
-
-const registerDoctor = async (req, res) => {
+const licenseDoctor = async (req, res) => {
     try {
         // Middleware to upload license image
         uploadLicense(req, res, async function (err) {
@@ -55,34 +54,41 @@ const registerDoctor = async (req, res) => {
                 return res.status(StatusCodes.BAD_REQUEST).json({ message: 'License image upload failed', error: err.message });
             }
 
-            // Extract uploaded image URLs and other user data from request
-            const profileImageURL = req.imageURL || null;
-            const licenseImageURL = req.licenseImageURL || null;
-            const { ...userData } = req.body;
+            const id = req.body.params.id;
+            const user = await User.findById(id);
 
-            // Add image URLs to user data if they exist
-            const userDataWithImages = profileImageURL && licenseImageURL ? { ...userData, profileImageURL, licenseImageURL } : userData;
-
-            try {
-                // Create the user with profile and license image URLs
-                const user = await User.create(userDataWithImages);
-
-                // Send successful response
-                res.status(StatusCodes.CREATED).json({ user: { name: user.Fname }, role: { role: user.role } });
-            } catch (error) {
-                // Handle validation errors
-                if (error.name === 'ValidationError') {
-                    const errors = Object.values(error.errors).map(err => err.message);
-                    return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Validation failed', errors });
-                }
-                throw error; // Re-throw other errors
+            if (!user) {
+                throw new NotFoundError('No user found');
             }
+
+            // Get the current imageLicense
+            let imageLicense = user.imageLicense;
+
+            // If the imageLicense is null, update it with the license variable
+            if (!imageLicense) { 
+                imageLicense = req.licenseImageURL;
+            }
+
+            // Construct the update operation
+            const update = imageLicense ? { $set: { imageLicense } } : { $unset: { imageLicense: "" } };
+
+            // Update the user document
+            const updatedUser = await User.findByIdAndUpdate(id, update, { new: true });
+
+            if (!updatedUser) {
+                return res.status(StatusCodes.NOT_FOUND).json({ message: 'No user found' });
+            }
+
+            // Send successful response
+            res.status(StatusCodes.CREATED).json({ user: { name: user.Fname }, role: { role: user.role } });
         });
     } catch (err) {
         // Handle unexpected errors
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Doctor registration failed', error: err.message });
     }
 };
+
+
 
 
 
@@ -117,6 +123,6 @@ const login = async (req, res) => {
 
 module.exports = {
     register,
-    registerDoctor,
+    licenseDoctor,
     login,
 }
