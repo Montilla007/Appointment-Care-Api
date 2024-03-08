@@ -54,20 +54,16 @@ const licenseDoctor = async (req, res) => {
                 return res.status(StatusCodes.BAD_REQUEST).json({ message: 'License image upload failed', error: err.message });
             }
 
-            const id = req.body.params.id;
+            const id = req.params.id;
             const user = await User.findById(id);
 
             if (!user) {
                 throw new NotFoundError('No user found');
             }
 
-            // Get the current imageLicense
-            let imageLicense = user.imageLicense;
-
-            // If the imageLicense is null, update it with the license variable
-            if (!imageLicense) { 
-                imageLicense = req.licenseImageURL;
-            }
+            // Assign the new imageLicense
+            const imageLicense = req.licensePictureURL;
+            console.log("c", imageLicense);
 
             // Construct the update operation
             const update = imageLicense ? { $set: { imageLicense } } : { $unset: { imageLicense: "" } };
@@ -80,13 +76,14 @@ const licenseDoctor = async (req, res) => {
             }
 
             // Send successful response
-            res.status(StatusCodes.CREATED).json({ user: { name: user.Fname }, role: { role: user.role } });
+            res.status(StatusCodes.CREATED).json({ user: { name: user.Fname }, role: { role: user.role }, license: { imageLicense: user.imageLicense} });
         });
     } catch (err) {
         // Handle unexpected errors
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Doctor registration failed', error: err.message });
     }
 };
+
 
 
 
