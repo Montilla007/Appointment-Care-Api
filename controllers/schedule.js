@@ -8,7 +8,7 @@ const getSchedule = async (req, res, next) => {
         const { id } = req.params;
 
         // Find schedules where either doctorId or patientId matches the provided id
-        const schedules = await Schedule.find({ $or: [{ doctorId: id }, { patientId: id }] });
+        const schedules = await Schedule.find({ $or: [{ doctorId: id }, { patientId: id }, { _id: id}] });
 
         if (schedules.length === 0) {
             return res.status(StatusCodes.NOT_FOUND).json({ message: 'No schedules found' });
