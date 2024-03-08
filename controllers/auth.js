@@ -6,7 +6,7 @@ const uploadLicense = require('../middleware/licenseUpload'); // Import multer m
 const register = async (req, res) => {
     try {
         // Upload the image using the middleware
-        uploadLicense(req, res, async function (err) {
+        uploadImage(req, res, async function (err) {
             if (err) {
                 return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Image upload failed', error: err.message });
             }
@@ -45,6 +45,9 @@ const register = async (req, res) => {
     }
   }
 
+// const registerDoctor = async (req, res) => {
+
+// }
 
 
 
