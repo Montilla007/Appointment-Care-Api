@@ -4,7 +4,7 @@ const { BadRequestError, UnauthenticatedError } = require('../errors');
 const uploadImage = require('../middleware/fileUpload'); // Import multer middleware
 const uploadLicense = require('../middleware/licenseUpload'); // Import multer middleware
 
-const registerDoctor = async (req, res) => {
+const register = async (req, res) => {
     try {
         // Upload the image using the middleware
         uploadImage(req, res, async function (err) {
@@ -46,7 +46,7 @@ const registerDoctor = async (req, res) => {
     }
 }
 
-const register = async (req, res) => {
+const registers = async (req, res) => {
     try {
         // Upload the profile image using the middleware
         uploadImage(req, res, async function (err) {
